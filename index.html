@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="image.png" alt="Health App Logo">
+            <h1>Health & Fitness Tracker</h1>
+        </div>
+    </header>
+
+    <main>
+        <!-- Health Overview -->
+        <section class="dashboard">
+            <h2>Your Health Overview</h2>
+            <div class="card">
+                <h3>Steps Today</h3>
+                <p id="steps">0</p>
+            </div>
+            <div class="card">
+                <h3>Heart Rate</h3>
+                <p id="heart-rate">70 bpm</p>
+            </div>
+        </section>
+
+        <!-- Symptom Checker -->
+        <section class="symptom-checker">
+            <h2>AI-Powered Symptom Checker</h2>
+            <input type="text" id="symptom-input" placeholder="Enter symptoms..." />
+            <button onclick="checkSymptom()">Check Symptoms</button>
+            <p id="symptom-result"></p>
+            <img id="disease-image" src="" alt="" style="display: none; max-width: 300px; margin-top: 20px;">
+        </section>
+
+        <!-- Personalized Fitness Recommendation -->
+        <section class="fitness-recommendation">
+            <h2>Personalized Fitness Recommendation</h2>
+            <p id="fitness-recommendation">Loading...</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 Health App. All rights reserved.</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
