@@ -1,88 +1,69 @@
-// Sample dataset of diseases, symptoms, and images
+// -----------------------------
+// Simulated User Data
+// -----------------------------
+let steps = 8000;       // Current steps (can now be updated dynamically)
+let stepGoal = 10000;   // Step goal
+let heartRate = 75;     // Simulated heart rate
+
+// -----------------------------
+// Sample Diseases Dataset
+// -----------------------------
 const diseaseData = [
     {
         name: "Flu",
         symptoms: ["fever", "cough", "fatigue"],
-        imageUrl: "https://example.com/flu_image.jpg", // Replace with real image URL
+        imageUrl: "https://via.placeholder.com/300?text=Flu"
     },
     {
         name: "Cold",
         symptoms: ["runny nose", "sneezing", "cough"],
-        imageUrl: "https://via.placeholder.com/300?text=Cold", // Replace with real image URL
+        imageUrl: "https://via.placeholder.com/300?text=Cold"
     },
     {
         name: "Migraine",
         symptoms: ["headache", "nausea", "sensitivity to light"],
-        imageUrl: "https://via.placeholder.com/300?text=Migraine", // Replace with real image URL
+        imageUrl: "https://via.placeholder.com/300?text=Migraine"
     },
     {
         name: "Allergy",
         symptoms: ["itchy eyes", "sneezing", "runny nose"],
-        imageUrl: "https://via.placeholder.com/300?text=Allergy", // Replace with real image URL
+        imageUrl: "https://via.placeholder.com/300?text=Allergy"
+    },
+    {
+        name: "UTI",
+        symptoms: ["burning sensation", "frequent urination", "urgency", "lower abdominal pain"],
+        imageUrl: "https://via.placeholder.com/300?text=UTI"
     }
 ];
 
-// Simulating 5000 steps and 75 bpm for now
-let steps = 5000;
-let heartRate = 75;
-
-// Updating the dashboard with steps and heart rate
-document.getElementById('steps').textContent = steps;
-document.getElementById('heart-rate').textContent = `${heartRate} bpm`;
-
-// Function to check symptoms and match diseases
-function checkSymptom() {
-    const inputSymptoms = document.getElementById('symptom-input').value
-        .toLowerCase()   // Normalize input to lowercase for case-insensitive matching
-        .split(",")      // Split symptoms by commas
-        .map(symptom => symptom.trim()); // Trim any extra spaces
-
-    if (!inputSymptoms || inputSymptoms.length === 0) {
-        document.getElementById('symptom-result').textContent = 'Please enter some symptoms to check.';
-        document.getElementById('disease-image').style.display = 'none';
-        return;
-    }
-
-    let matchedDisease = null;
-
-    // Loop through each disease and check for matches
-    for (let i = 0; i < diseaseData.length; i++) {
-        const disease = diseaseData[i];
-        
-        // Check if every symptom entered by the user matches at least one symptom from the disease
-        const matches = inputSymptoms.every(symptom => 
-            disease.symptoms.some(diseaseSymptom => diseaseSymptom.toLowerCase().includes(symptom))
-        );
-
-        // Debugging: Log the matching process
-        console.log(`Checking disease: ${disease.name}`);
-        console.log(`Symptoms entered: ${inputSymptoms}`);
-        console.log(`Matching symptoms: ${disease.symptoms}`);
-        console.log(`Match result: ${matches}`);
-
-        if (matches) {
-            matchedDisease = disease;
-            break;
-        }
-    }
-
-    // If a disease is found, display it
-    if (matchedDisease) {
-        document.getElementById('symptom-result').textContent = `Possible condition: ${matchedDisease.name}`;
-        document.getElementById('disease-image').src = matchedDisease.imageUrl;
-        document.getElementById('disease-image').style.display = 'block'; // Show image
-    } else {
-        document.getElementById('symptom-result').textContent = 'No match found. Please consult a doctor.';
-        document.getElementById('disease-image').style.display = 'none'; // Hide image if no match
-    }
+// -----------------------------
+// Health Dashboard Update
+// -----------------------------
+function updateHealthDashboard() {
+    document.getElementById('steps').textContent = steps;
+    document.getElementById('heart-rate').textContent = `${heartRate} bpm`;
 }
 
-// Personalized Fitness Recommendation based on steps data
+// -----------------------------
+// Step Progress Bar
+// -----------------------------
+function updateStepProgress() {
+    const progressBar = document.getElementById('step-progress');
+    const progressText = document.getElementById('step-progress-text');
+
+    progressBar.value = steps;
+    progressBar.max = stepGoal;
+    progressText.textContent = `${steps}/${stepGoal} steps`;
+}
+
+// -----------------------------
+// Personalized Fitness Recommendation
+// -----------------------------
 function getFitnessRecommendation() {
     let recommendation = '';
     if (steps < 5000) {
         recommendation = 'Try to walk more today to hit 10,000 steps.';
-    } else if (steps < 10000) {
+    } else if (steps < stepGoal) {
         recommendation = 'Great! Keep up the good work!';
     } else {
         recommendation = 'You are doing fantastic! Stay active!';
@@ -91,21 +72,65 @@ function getFitnessRecommendation() {
     document.getElementById('fitness-recommendation').textContent = recommendation;
 }
 
-// Function to update the progress bar and steps
-function updateStepProgress() {
-    // Update the step count text
-    document.getElementById('steps').textContent = steps;
+// -----------------------------
+// AI-Powered Symptom Checker (Enhanced)
+// -----------------------------
+function checkSymptom() {
+    const inputSymptoms = document.getElementById('symptom-input').value
+        .toLowerCase()
+        .split(",")
+        .map(symptom => symptom.trim())
+        .filter(symptom => symptom !== "");
 
-    // Update the progress bar value and text
-    const progressBar = document.getElementById('step-progress');
-    progressBar.value = steps;
+    if (inputSymptoms.length === 0) {
+        document.getElementById('symptom-result').textContent = 'Please enter some symptoms to check.';
+        document.getElementById('disease-image').style.display = 'none';
+        return;
+    }
 
-    // Update the progress text
-    document.getElementById('step-progress-text').textContent = `${steps}/10000 steps`;
+    const matchedDiseases = [];
+
+    diseaseData.forEach(disease => {
+        const hasMatch = inputSymptoms.some(symptom =>
+            disease.symptoms.some(diseaseSymptom => diseaseSymptom.toLowerCase().includes(symptom))
+        );
+        if (hasMatch) matchedDiseases.push(disease);
+    });
+
+    if (matchedDiseases.length > 0) {
+        const diseaseNames = matchedDiseases.map(d => d.name).join(", ");
+        document.getElementById('symptom-result').textContent =
+            `Based on your symptoms, these conditions might be possible: ${diseaseNames}`;
+
+        // Display the first matched disease image
+        document.getElementById('disease-image').src = matchedDiseases[0].imageUrl;
+        document.getElementById('disease-image').style.display = 'block';
+    } else {
+        // Friendly fallback message
+        document.getElementById('symptom-result').textContent =
+            'No exact match found. Consider consulting a healthcare professional for guidance.';
+        document.getElementById('disease-image').style.display = 'none';
+    }
 }
 
-// Call the update function on load
-updateStepProgress();
+// -----------------------------
+// Update Steps Dynamically from Input
+// -----------------------------
+function updateSteps() {
+    const newSteps = parseInt(document.getElementById('steps-input').value);
+    if (!isNaN(newSteps)) {
+        steps = newSteps;
+        updateHealthDashboard();
+        updateStepProgress();
+        getFitnessRecommendation();
+    }
+}
 
-// Call the fitness recommendation function when the page loads
-getFitnessRecommendation();
+// -----------------------------
+// Initialize Dashboard on Page Load
+// -----------------------------
+window.addEventListener('DOMContentLoaded', () => {
+    updateHealthDashboard();
+    updateStepProgress();
+    getFitnessRecommendation();
+});
